@@ -17,7 +17,7 @@ from mxnet.gluon import nn
 from mxnet.gluon import model_zoo as model
 from mxnet.gluon.data import vision
 from util import *
-import h5py
+#import h5py
 import os
 import time
 
@@ -201,7 +201,7 @@ def train(net,epochs,batch_size,data_iter_train,num_classes,ctx):
             steps += batch_size
             train_loss += nd.mean(loss).asscalar()
             train_acc += accuracy(output, label)
-        print(train_loss,steps)
+            print(train_loss,steps)
         print("Epoch %d. loss: %.4f, acc: %.2f%%, time %.1f sec" % (epoch+1, 
                             train_loss/steps, train_acc/steps*100, time.time()-tic))
     
@@ -212,12 +212,13 @@ if __name__ == "__main__":
     epochs = 10
     data_train,data_val = data_process(batch_size)
 
-    pretrained_net = model.vision.resnet18_v2(pretrained = True)
+#    pretrained_net = model.vision.resnet18_v2(pretrained = True)
     finetune_net = model.vision.resnet18_v2(classes=num_classes)
-    finetune_net.features = pretrained_net.features
-    finetune_net.output.initialize(init.Xavier())
+#    finetune_net.features = pretrained_net.features
+#    finetune_net.output.initialize(init.Xavier())
     
     ctx = mx.gpu() # 训练的时候为了简化计算，使用了单 GPU
+    finetune_net.initialize(ctx=ctx,init=init.Xavier())
     softmax_cross_entropy = gluon.loss.SoftmaxCrossEntropyLoss()    
     
     train(finetune_net,epochs,batch_size,data_train,num_classes,ctx)
